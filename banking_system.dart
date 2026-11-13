@@ -5,8 +5,8 @@ import 'dart:io';
 List<Map<String,dynamic>> accounts = [
   {
     'acc_name': 'Rkcoder',
-    'acc_no': '0100123123',
-    'password': 'Barlarlar',
+    'acc_no': '123',
+    'password': 'abc',
     'balance': 5000,
     'history': [
       {
@@ -21,9 +21,9 @@ List<Map<String,dynamic>> accounts = [
   },
   {
     'acc_name': 'Joker',
-    'acc_no': '0100123124',
+    'acc_no': '124',
     'balance': 1500,
-    'password': 'no need pass',
+    'password': 'abc',
     'history': [
       {
         'type' : 'cash-in',
@@ -38,6 +38,7 @@ List<Map<String,dynamic>> accounts = [
 ];
 
 
+List<String> actions = ['Check balance', 'Cash in', 'Cash out', 'Exit'];
 
 void main(){
   welcomeMessage();
@@ -55,6 +56,12 @@ void runApp (){
     case 1:
       checkBalance();
       break;
+    case 2:
+      cashIn();
+      break;
+    case 3:
+      cashOut();
+      break;
     default:
       print('Not implemnted!');
   }
@@ -68,15 +75,13 @@ void welcomeMessage(){
 }
 
 int mainMenu(bool retry){
-  List<String> actions = ['Check balance', 'Cash in', 'Cash out', 'Exit'];
-  String menu = '';
+  String menu = '\nMenu\n-------------\n';
   for (var i = 0; i < actions.length; i++) {
     menu += '${i+1}.${actions[i]}\n';
   }
   print(menu);
   return getChoose(retry);
 }
-
 
 void checkBalance(){
   Map<String,dynamic>? account;
@@ -93,18 +98,92 @@ void checkBalance(){
     retry = true;
   } while (!confirmed);
 
-  print('\n\n');
-  print('Account details');
+  print('\n');
+  print('Account details'.toLowerCase());
   print('---------------------');
-  print('${account['acc_name']}');
-  print('${account['acc_no']}');
-  print('${account['balance']} ks\n\n');
+  print('Account name : ${account['acc_name']}');
+  print('Account number : ${account['acc_no']}');
+  print('Current balance : ${account['balance']} ks\n');
+  print('History');
+  print('---------------------');
 
+  final historyStr = (account['history'] as List)
+  .map((e)=>'${e['type']} : ${e['amount']}').join('\n');
+  print(historyStr);
+  print('');
+
+  waitToback();
   runApp();
 
 }
 
+void cashIn(){
+  print('\nCashing in'.toUpperCase());
+  print('--------------');
 
+  Map<String,dynamic>? account;
+  bool retry = false;
+  do {
+    account = getAccount(retry);
+    retry = true;
+  } while (account==null);
+
+  int amount = getAmount();
+  while (amount <= 0) {
+    amount = getAmount(true);
+  }
+
+  retry = false;
+  bool confirmed = false;
+  do {
+    confirmed = confirmPassword(account['password'], retry);
+    retry = true;
+  } while (!confirmed);
+
+  account['balance'] += amount;
+  (account['history'] as List).add({'type' : 'cash-in', 'amount': amount});
+  print('\n$amount are successfully cashed in!\n');
+  waitToback();
+  runApp();
+}
+
+void cashOut(){
+  print('\nCashing out'.toUpperCase());
+  print('--------------');
+
+  Map<String,dynamic>? account;
+  bool retry = false;
+  do {
+    account = getAccount(retry);
+    retry = true;
+  } while (account==null);
+
+  int amount = getAmount();
+  while (amount <= 0) {
+    amount = getAmount(true);
+  }
+
+  retry = false;
+  bool confirmed = false;
+  do {
+    confirmed = confirmPassword(account['password'], retry);
+    retry = true;
+  } while (!confirmed);
+
+  account['balance'] -= amount;
+  (account['history'] as List).add({'type' : 'cash-out', 'amount': amount});
+  print('\n$amount are successfully cashed out!\n');
+  waitToback();
+  runApp();
+}
+
+
+int getAmount([bool retry = false]){
+  if(retry) print('Please write a valid amount!');
+  stdout.write('Amount: ');
+  String? val = stdin.readLineSync();
+  return int.tryParse(val??'')?? 0;
+}
 
 
 int getChoose([bool retry = false]){
@@ -135,6 +214,11 @@ Map<String,dynamic>?  getAccount(bool retry){
 bool confirmPassword(String password,  bool retry){
   String pass = getString('Password', retry);
   return pass == password;
+}
+
+void waitToback(){
+  stdout.write('Press any key to back: ');
+  stdin.readLineSync();
 }
 
 
