@@ -182,6 +182,7 @@ int getAmount([bool retry = false]){
   if(retry) print('Please write a valid amount!');
   stdout.write('Amount: ');
   String? val = stdin.readLineSync();
+  exitApp(val);
   return int.tryParse(val??'')?? 0;
 }
 
@@ -189,6 +190,7 @@ int getAmount([bool retry = false]){
 int getChoose([bool retry = false]){
   stdout.write('Select a ${retry? 'valid ':''}number : ');
   String? val = stdin.readLineSync();
+  exitApp(val);
   return int.tryParse(val??'')?? 0;
 }
 
@@ -196,6 +198,7 @@ String getString(String lable, [bool retry = false]){
   if(retry) print('Please write a valid $lable');
   stdout.write('$lable: ');
   String? val = stdin.readLineSync();
+  exitApp(val);
   return (val??'').trim();
 }
 
@@ -218,7 +221,14 @@ bool confirmPassword(String password,  bool retry){
 
 void waitToback(){
   stdout.write('Press any key to back: ');
-  stdin.readLineSync();
+  String? val = stdin.readLineSync();
+  exitApp(val);
 }
 
-
+var exitKey = 'exit';
+void exitApp(String? input){
+  if(input == exitKey){
+    print('\nSee you next time!\nBye.....!\n');
+    exit(0);
+  }
+}
