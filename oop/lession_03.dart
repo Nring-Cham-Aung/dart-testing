@@ -1,6 +1,6 @@
 
 
-// const constructor
+// constant constructor
 
 class Shape {
   final int x, y;
