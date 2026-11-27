@@ -24,6 +24,7 @@ void main(){
   final item2 = MediaItem.withName('//download/abc.mp3', 'အမေ့အိမ်');
 
   play(item);
+  play(item2);
 
 }
 
